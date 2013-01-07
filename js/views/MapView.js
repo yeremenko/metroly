@@ -50,20 +50,26 @@ define([
 		}
 	}
 
-	var routeLayer = new L.LayerGroup();
-
-	var MapView = Backbone.View.extend({
+    var MapView = Backbone.View.extend({
 		el: "#map",
 		map: {},
 
 		initialize: function() {
 			this.initMap();
-			console.log("initialized MapView");
+			$(window).bind("resize", _.bind(this.ensureMapHeight, this));
+            console.log("initialized MapView");
+        },
+
+		ensureMapHeight: function() {
+			console.log("Ensuring map height");
+			var newHeight = $(window).height() - $("#main-header").height();
+			$("#map").css("height", newHeight);
 		},
 
 		initMap: function() {
+            this.ensureMapHeight();
 
-			this.map = L.map(this.el);
+            this.map = L.map(this.el);
 			this.map.setView(locations.brooklyn, 13);
 
 			// this.map.addLayer(busesLayer);

@@ -1,3 +1,23 @@
+html, body {
+	margin: 0px;
+	padding: 0px;
+}
+
+#main-header {
+    height: 50px;
+    background: #101010;
+}
+#main-header h1 {
+    margin: 0 5px;
+    padding-top: 10px;
+    font-size: 20px;
+}
+#main-header a {
+    color: white;
+    text-decoration: none;
+}
+
 #map {
-	height: 500px;
+	height: 400px;
+	width: 100%;
 }
