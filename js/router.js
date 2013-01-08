@@ -19,7 +19,7 @@ define([
         var app = new AppView();
 
         app_router.on('route:selectBusLine', function(busLine) {
-            app.showBus(busLine);
+            app.selectBus(busLine);
         });
 
 		app_router.on('route:defaultAction', function() {

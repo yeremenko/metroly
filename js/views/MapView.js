@@ -58,6 +58,12 @@ define([
 			this.initMap();
 			$(window).bind("resize", _.bind(this.ensureMapHeight, this));
             console.log("initialized MapView");
+            this.model.on("change:selectedRoute", _.bind(this.selectedRouteChanged, this));
+        },
+
+        selectedRouteChanged: function() {
+            console.log("The selectd route changed");
+           this.showBuses(this.model.get('selectedRoute'));
         },
 
 		ensureMapHeight: function() {

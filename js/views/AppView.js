@@ -3,10 +3,12 @@ define([
 	'underscore',
 	'backbone',
 	'handlebars',
-	'views/MapView'
-], function($, _, Backbone, Handlebars, MapView) {
+	'views/MapView',
+    'viewmodels/MapVM'
+], function($, _, Backbone, Handlebars, MapView, MapVM) {
 
-    var map = new MapView();
+    var mapVM = new MapVM();
+    var map = new MapView({model: mapVM});
 
 	var AppView = Backbone.View.extend({
 		initialize: function() {
@@ -17,8 +19,8 @@ define([
 			console.log("Rendered AppView.");
 			return this;
 		},
-        showBus: function(busLine) {
-            map.showBuses(busLine);
+        selectBus: function(busLine) {
+            map.model.set({selectedRoute: busLine});
         }
 	});
 
