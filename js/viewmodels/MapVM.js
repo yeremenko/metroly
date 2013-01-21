@@ -2,13 +2,21 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'router',
-], function($, _, Backbone, Router) {
+    'metroly'
+], function($, _, Backbone, metroly) {
 
     var MapVM = Backbone.Model.extend({
         defaults: {
-            selectedRoute: "",
-            isLive: false
+            route: undefined,
+            directionId: 0,
+            isLive: false,
+            isFavorite: false
+        },
+
+        selectRoute: function(routeId) {        
+            metroly.getRoute(routeId, _.bind(function(route) {                
+                this.set("route", route);
+            }, this));
         }
     });
 

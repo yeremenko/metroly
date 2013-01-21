@@ -20,13 +20,18 @@
 			mta_api.key = apiKey;
 		},
 
-		getBuses: function(busLine, callback) {
+		getBuses: function(routeId, directionId, callback) {
+
+			console.log("Is this the callback");
+			console.log(callback);
+
 			// vehicle monitoring url
 			var vm_url = mta_api.url + "vehicle-monitoring.json";
 
 			var data = {
 				"key": mta_api.key,
-				"LineRef": busLine,
+				"DirectionRef": directionId,
+				"LineRef": routeId,
 				"OperatorRef": "MTA NYCT"
 			};
 
@@ -43,6 +48,9 @@
 					var vehicles = data.Siri.ServiceDelivery
 						.VehicleMonitoringDelivery[0].VehicleActivity;
 
+                    console.log("These are the vehicles");
+                    console.log(vehicles);
+
 					callback(vehicles);
 				},
 				error: function() {
@@ -50,6 +58,7 @@
 				}
 			});
 		},
+
 
 		getRoute: function(busLine, callback) {
 		 	var data = {
@@ -66,9 +75,6 @@
 		 		success: function(data) {
 
 		 			var routeDirections = [];
-
-                    console.log("Got the data: ");
-		 			console.log(data);
 
 		 			var directions = data.searchResults.matches[0].directions;
 		 			var numDirections = directions.length;
@@ -170,6 +176,17 @@
 			this.description = description;
 		},
 
+        Vehicle: function() {
+
+        },
+
+        /**
+         * Represents a fleet of Vehicle objects.
+         * @constructor
+         */
+        VehicleFleet: function() {
+
+        }
 	};
 
 	window.metroly = metroly;
