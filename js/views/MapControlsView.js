@@ -12,7 +12,8 @@ define([
 
         initialize: function() {
             Handlebars.registerHelper('listDirections', this.listDirectionsHelper);
-            this.model.on("change", _.bind(this.render, this));
+            this.model.on("change:route", _.bind(this.render, this));
+            // this.model.on("change:directionId", _.bind(this.selectDirection, this));
             this.render();
         },
 
@@ -21,12 +22,17 @@ define([
         },
 
         selectDirection: function(evt) {
-            $(".route").removeClass('route-selected');                    
+            console.log("Selected direction clicked");
             var $element = $(evt.target);
-            var directionId = $element.data('direction');
-            $element.addClass('route-selected');
-            this.model.set('directionId', directionId);            
+            var currDirectionId = $element.data('direction');
 
+            var prevDirectionId = this.model.get('directionId');
+            if (prevDirectionId !== currDirectionId)  {
+                console.log("Why you no change?");
+                $(".route").removeClass('route-selected');                
+                $element.addClass('route-selected');
+                this.model.set('directionId', currDirectionId);            
+            }
         },
 
 
@@ -52,6 +58,8 @@ define([
         render: function() {
             var html = this.template(this.model.toJSON());
             this.$el.html(html);
+            this.model.set('directionId', 0);            
+            $("[data-direction=0]").addClass("route-selected");
             return this;
         }
     });
