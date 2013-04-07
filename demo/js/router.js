@@ -1,35 +1,33 @@
-define([
-	'jquery',
-	'underscore',
-	'backbone',
-    'views/AppView'
+/*global define */
 
-], function($, _, Backbone, AppView) {
+define(['jquery', 'backbone', 'application'], function ($, Backbone, App) {
+  "use strict";
 
-	var AppRouter = Backbone.Router.extend({
-		routes: {
-            'nyc/bus/:bus': 'selectBusLine',
-			'*actions': 'defaultAction'
-		}
-	});
+  var Router, self = this;
 
-	var initialize = function() {
-		var app_router = new AppRouter();
+  Router = Backbone.Router.extend({
+    routes: {
+      'bus/:bus': 'selectBus',
+      '*default': 'default'
+    }
+  });
 
-        var app = new AppView();
+  Router.initialize = function () {
+    var router = new Router();
+    var app = new App();
 
-        app_router.on('route:selectBusLine', function(busLine) {
-            app.selectRoute(busLine);
-        });
+    $(function () {
+      router.on('route:selectBus', function (busline) {
+        app.selectBus(busline);
+      });
 
-		app_router.on('route:defaultAction', function() {
+      router.on('route:default', function (action) {
+        app.toHomeState();
+      });
+    });
 
-		});
+    Backbone.history.start({pushState: false});
+  };
 
-		Backbone.history.start({pushState: false});
-	};
-
-	return {
-		initialize : initialize
-	};
+  return Router;
 });
