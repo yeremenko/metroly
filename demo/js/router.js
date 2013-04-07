@@ -8,6 +8,7 @@ define(['jquery', 'backbone', 'application'], function ($, Backbone, App) {
   Router = Backbone.Router.extend({
     routes: {
       'bus/:bus': 'selectBus',
+      'bus/:bus/:dir': 'selectDirection',
       '*default': 'default'
     }
   });
@@ -19,6 +20,11 @@ define(['jquery', 'backbone', 'application'], function ($, Backbone, App) {
     $(function () {
       router.on('route:selectBus', function (busline) {
         app.selectBus(busline);
+      });
+
+      router.on('route:selectDirection', function (bus, dir) {
+        app.selectBus(bus);
+        app.selectDirection(dir);
       });
 
       router.on('route:default', function (action) {

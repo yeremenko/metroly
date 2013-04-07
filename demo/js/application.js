@@ -1,31 +1,33 @@
 /*jslint nomen: true, unparam: true, indent: 2 */
 /*global define */
 define([
-  'jquery',
-  'underscore',
   'backbone',
-  'handlebars',
-  'leaflet'
-], function ($, _, Backbone, H, L) {
+  'views/mapView',
+  'views/controlsView',
+  'models/mapModel'
+], function (Backbone, MapView, ControlsView, MapModel) {
   "use strict";
 
-  /* -- Models -- */
+  var mapModel, mapView, controlsView, AppView;
 
-  /* -- Views -- */
+  mapModel = new MapModel();
+  controlsView = new ControlsView({model: mapModel});
+  mapView = new MapView({model: mapModel});
 
-  var MapView = Backbone.View.extend({
-
-    el: "#map",
+  AppView = Backbone.View.extend({
 
     initialize: function () {
+      console.log('Inited AppView');
+    },
 
-    }
-  });
-
-  var AppView = Backbone.View.extend({
     selectBus: function (bus) {
-      console.log('Will select ', bus);
+      mapModel.set('bus', bus);
+    },
+
+    selectDirection: function (direction) {
+      mapModel.set('direction', direction);
     }
   });
+
   return AppView;
 });
