@@ -6,7 +6,8 @@ require.config({
     underscore: '../assets/libs/underscore.min',
     backbone: '../assets/libs/backbone.min',
     handlebars: '../assets/libs/handlebars',
-    leaflet: '../assets/libs/leaflet/leaflet'
+    leaflet: '../assets/libs/leaflet/leaflet',
+    busesnyc: '../assets/libs/busesNYC'
   },
   shim: {
     backbone: {
@@ -21,6 +22,10 @@ require.config({
     },
     leaflet: {
       exports: 'L'
+    },
+    busesnyc: {
+      deps: ['jquery'],
+      exports: 'MtaBusTime'
     }
   }
 });

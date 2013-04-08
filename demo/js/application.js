@@ -8,11 +8,11 @@ define([
 ], function (Backbone, MapView, ControlsView, MapModel) {
   "use strict";
 
-  var mapModel, mapView, controlsView, AppView;
-
-  mapModel = new MapModel();
-  controlsView = new ControlsView({model: mapModel});
-  mapView = new MapView({model: mapModel});
+  var AppView,
+    apiKey = '36ad9e86-f0b4-4831-881c-55c8d44473b3',
+    mapModel = new MapModel({apiKey: apiKey}),
+    controlsView = new ControlsView({model: mapModel}),
+    mapView = new MapView({model: mapModel});
 
   AppView = Backbone.View.extend({
 

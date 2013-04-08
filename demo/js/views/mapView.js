@@ -7,6 +7,8 @@ define([
   'leaflet'
 ], function ($, _, Backbone, L) {
 
+  // 36ad9e86-f0b4-4831-881c-55c8d44473b3
+
   var locations = {
     bronx:        [40.832359, -73.892670],
     brooklyn:     [40.650000, -73.950000],
@@ -49,14 +51,44 @@ define([
 
   var maxBounds = new L.LatLngBounds(locations.SWBound, locations.NEBound);
 
+  var createLocatorIcon = function (bearing) {
+    var locator_icon = new LocatorIcon(),
+      iconUrl = '',
+      imagesBasePath = '../../assets/images/icon_set/';
+
+    if (bearing >= 67.5 && bearing < 112.5) {
+      iconUrl = imagesBasePath + 'icon_n.png';  // N
+    } else if (bearing >= 112.5 && bearing < 157.5) {
+      iconUrl = imagesBasePath + 'icon_nw.png'; // NW
+    } else if (bearing >= 157.5 && bearing < 202.5) {
+      iconUrl = imagesBasePath + 'icon_w.png';  // W
+    } else if (bearing >= 202.5 && bearing < 247.5) {
+      iconUrl = imagesBasePath + 'icon_sw.png'; // SW
+    } else if (bearing >= 247.5 && bearing < 292.5) {
+      iconUrl = imagesBasePath + 'icon_s.png';  // S
+    } else if (bearing >= 292.5 && bearing < 337.5) {
+      iconUrl = imagesBasePath + 'icon_se.png'; // SE
+    } else if (bearing >= 337.5 || bearing < 22.5) {
+      iconUrl = imagesBasePath + 'icon_e.png';  // E
+    } else if (bearing >= 22.5 && bearing < 67.5) {
+      iconUrl = imagesBasePath + 'icon_ne.png'; // NE
+    }
+
+    if (iconUrl !== '') {
+      locator_icon = new LocatorIcon({iconUrl: iconUrl});
+    }
+
+    return locator_icon;
+  };
+
   var MapView = Backbone.View.extend({
     el: '#map',
 
     initialize: function () {
       this.initMap();
       $(window).bind("resize", _.bind(this.ensureMapHeight, this));
-      this.model.on("change:bus", this.busChanged, this);
-      this.model.on("change:direction", this.directionChanged, this);
+      this.model.onBusesChanged(this.showBuses, this);
+      this.model.onRouteChanged(this.showRoute, this);
     },
 
     initMap: function () {
@@ -73,18 +105,33 @@ define([
       $("#map").css("height", newHeight);
     },
 
-    busChanged: function () {
-      var bus = this.model.get('bus');
-      console.log('The bus selected is now: ', bus);
-    },
-
-    directionChanged: function () {
-      var dir = this.model.get('direction');
-      console.log('The direction is now', dir);
-    },
-
     selectBus: function (bus) {
       this.model.set('bus', bus);
+    },
+
+    showBuses: function (buses) {
+      var i, bus, lat, lng, locatorIcon, marker, markerInfo, bearing, layer,
+        busesLength = buses.length;
+
+      layer = new L.LayerGroup();
+
+      for (i = 0; i < busesLength; i += 1) {
+        bus = buses[i].MonitoredVehicleJourney;
+        lat = bus.VehicleLocation.Latitude;
+        lng = bus.VehicleLocation.Longitude;
+        bearing = bus.Bearing;
+        locatorIcon = createLocatorIcon(bearing);
+        marker = L.marker([lat, lng], {icon: locatorIcon});
+        markerInfo = "<p><strong>" + bus.PublishedLineName + "</strong> &rarr; " + bus.DestinationName + "</p>";
+        marker.bindPopup(markerInfo);
+        layer.addLayer(marker);
+      }
+
+      layer.addTo(this.map);
+    },
+
+    showRoute: function (route) {
+      console.log('Will show this route on the map', route);
     },
 
     render: function () {
