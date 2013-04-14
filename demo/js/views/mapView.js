@@ -1,13 +1,54 @@
-/*jslint nomen: true, unparam: true, indent: 2, browser: true */
+/*jslint nomen: true, unparam: true, indent: 2, browser: true, bitwise: true */
 /*global define */
+
 define([
   'jquery',
   'underscore',
   'backbone',
   'leaflet'
 ], function ($, _, Backbone, L) {
+  "use strict";
 
-  // 36ad9e86-f0b4-4831-881c-55c8d44473b3
+  var RouteLayers = {
+    dir0: new L.LayerGroup(),
+    dir1: new L.LayerGroup()
+  };
+
+  var CurrentRouteLayer = {};
+
+  var decodePolyline = function (encoded) {
+    var len = encoded.length;
+    var index = 0;
+    var array = [];
+    var lat = 0;
+    var lng = 0;
+
+    while (index < len) {
+      var b;
+      var shift = 0;
+      var result = 0;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      var dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      var dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
+      lng += dlng;
+
+      array.push([lat * 1e-5, lng * 1e-5]);
+    }
+    return array;
+  };
 
   var locations = {
     bronx:        [40.832359, -73.892670],
@@ -57,21 +98,21 @@ define([
       imagesBasePath = '../../assets/images/icon_set/';
 
     if (bearing >= 67.5 && bearing < 112.5) {
-      iconUrl = imagesBasePath + 'icon_n.png';  // N
+      iconUrl = imagesBasePath + 'icon_n.png';
     } else if (bearing >= 112.5 && bearing < 157.5) {
-      iconUrl = imagesBasePath + 'icon_nw.png'; // NW
+      iconUrl = imagesBasePath + 'icon_nw.png';
     } else if (bearing >= 157.5 && bearing < 202.5) {
-      iconUrl = imagesBasePath + 'icon_w.png';  // W
+      iconUrl = imagesBasePath + 'icon_w.png';
     } else if (bearing >= 202.5 && bearing < 247.5) {
-      iconUrl = imagesBasePath + 'icon_sw.png'; // SW
+      iconUrl = imagesBasePath + 'icon_sw.png';
     } else if (bearing >= 247.5 && bearing < 292.5) {
-      iconUrl = imagesBasePath + 'icon_s.png';  // S
+      iconUrl = imagesBasePath + 'icon_s.png';
     } else if (bearing >= 292.5 && bearing < 337.5) {
-      iconUrl = imagesBasePath + 'icon_se.png'; // SE
+      iconUrl = imagesBasePath + 'icon_se.png';
     } else if (bearing >= 337.5 || bearing < 22.5) {
-      iconUrl = imagesBasePath + 'icon_e.png';  // E
+      iconUrl = imagesBasePath + 'icon_e.png';
     } else if (bearing >= 22.5 && bearing < 67.5) {
-      iconUrl = imagesBasePath + 'icon_ne.png'; // NE
+      iconUrl = imagesBasePath + 'icon_ne.png';
     }
 
     if (iconUrl !== '') {
@@ -88,7 +129,8 @@ define([
       this.initMap();
       $(window).bind("resize", _.bind(this.ensureMapHeight, this));
       this.model.onBusesChanged(this.showBuses, this);
-      this.model.onRouteChanged(this.showRoute, this);
+      this.model.on('change:route', this.cacheRoute, this);
+      this.model.on('change:direction', this.changeDirection, this);
     },
 
     initMap: function () {
@@ -109,11 +151,24 @@ define([
       this.model.set('bus', bus);
     },
 
+    changeDirection: function () {
+      var direction = this.model.get('direction');
+
+      this.map.removeLayer(CurrentRouteLayer);
+      CurrentRouteLayer = RouteLayers['dir' + direction];
+      this.map.addLayer(CurrentRouteLayer);
+
+      this.model.getBuses();
+    },
+
+    busLayer: new L.LayerGroup(),
+
     showBuses: function (buses) {
       var i, bus, lat, lng, locatorIcon, marker, markerInfo, bearing, layer,
         busesLength = buses.length;
 
-      layer = new L.LayerGroup();
+      this.map.removeLayer(this.busLayer);
+      this.busLayer = new L.LayerGroup();
 
       for (i = 0; i < busesLength; i += 1) {
         bus = buses[i].MonitoredVehicleJourney;
@@ -122,16 +177,41 @@ define([
         bearing = bus.Bearing;
         locatorIcon = createLocatorIcon(bearing);
         marker = L.marker([lat, lng], {icon: locatorIcon});
+        // TODO FUTURE Swap this out for a handlebars template.
         markerInfo = "<p><strong>" + bus.PublishedLineName + "</strong> &rarr; " + bus.DestinationName + "</p>";
         marker.bindPopup(markerInfo);
-        layer.addLayer(marker);
+        this.busLayer.addLayer(marker);
       }
 
-      layer.addTo(this.map);
+      this.busLayer.addTo(this.map);
     },
 
-    showRoute: function (route) {
-      console.log('Will show this route on the map', route);
+    cacheRoute: function () {
+      var self = this,
+        route = this.model.get('route'),
+        directions = route.directions;
+
+      RouteLayers.dir0 = new L.LayerGroup();
+      RouteLayers.dir1 = new L.LayerGroup();
+
+      _.each(directions, function (direction) {
+        _.each(direction.polylines, function (polyline) {
+          var polyLatLngs = [], dirId = direction.directionId, leafletPoly,
+            decodedPoints = decodePolyline(polyline);
+          _.each(decodedPoints, function (point) {
+            polyLatLngs.push(new L.LatLng(point[0], point[1]));
+          });
+
+          leafletPoly = new L.Polyline(polyLatLngs, {color: '#' + route.color});
+
+          RouteLayers['dir' + dirId].addLayer(leafletPoly);
+
+          // Show dir 0 by default.
+          self.map.removeLayer(CurrentRouteLayer);
+          CurrentRouteLayer = RouteLayers.dir0;
+          self.map.addLayer(CurrentRouteLayer);
+        });
+      });
     },
 
     render: function () {

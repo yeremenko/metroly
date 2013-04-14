@@ -1,5 +1,6 @@
-/*jslint nomen: true, unparam: true, indent: 2 */
 /*global define */
+/*jslint nomen: true, unparam: true, indent: 2 */
+
 define([
   'backbone',
   'views/mapView',
@@ -17,7 +18,7 @@ define([
   AppView = Backbone.View.extend({
 
     initialize: function () {
-      console.log('Inited AppView');
+
     },
 
     selectBus: function (bus) {

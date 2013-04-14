@@ -9,8 +9,9 @@ define([
 
   var MapModel = Backbone.Model.extend({
     defaults: {
-      bus: '',
-      route: 0 // 0 or 1
+      bus: undefined,
+      direction: 0,
+      route: {}
     },
 
     initialize: function () {
@@ -19,12 +20,23 @@ define([
       this.busesChangedCbs = [];
       this.routeChangedCbs = [];
       this.on('change:bus', this.getBuses, this);
+      this.on('change:bus', this.getRoute, this);
     },
 
     getBuses: function () {
-      var bus = this.get('bus'), self = this;
-      this.mta.getBuses(bus, null, function (buses) {
+      var bus = this.get('bus'), dir = this.get('direction'), self = this;
+      this.mta.getBuses(bus, dir, function (buses) {
         self.notifyBusesChanged(buses);
+      });
+    },
+
+    getRoute: function () {
+      var bus = this.get('bus'), self = this;
+      this.mta.getRoute(bus, function (route) {
+        route.directions = _.sortBy(route.directions, function (direction) {
+          return direction.directionId;
+        });
+        self.set('route', route);
       });
     },
 
@@ -32,23 +44,13 @@ define([
       this.busesChangedCbs.push(_.bind(cb, ctx));
     },
 
-    onRouteChanged: function (cb, ctx) {
-      this.routeChangedCbs.push(_.bind(cb, ctx));
-    },
-
     notifyBusesChanged: function (buses) {
       var i, cbs = this.busesChangedCbs, cbsLength = cbs.length;
       for (i = 0; i < cbsLength; i += 1) {
         cbs[i](buses);
       }
-    },
-
-    notifyRouteChanged: function (route) {
-      var i, cbs = this.routeChangedCbs, cbsLength = cbs.length;
-      for (i = 0; i < cbsLength; i += 1) {
-        cbs[i](route);
-      }
     }
+
   });
 
   return MapModel;

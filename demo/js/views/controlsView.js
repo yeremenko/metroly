@@ -1,5 +1,6 @@
 /*jslint nomen: true, unparam: true, indent: 2, browser: true */
 /*global define */
+
 define([
   'jquery',
   'underscore',
@@ -7,6 +8,13 @@ define([
   'handlebars',
   'text!../../assets/templates/controls.html'
 ], function ($, _, Backbone, H, controlsTpl) {
+
+  var Helpers = {
+    visuallySelectRoute: function (jqTarget) {
+      $('.route').removeClass('route-selected');
+      jqTarget.addClass('route-selected');
+    }
+  };
 
   var ControlsView = Backbone.View.extend({
     el: '#control-panel',
@@ -18,18 +26,31 @@ define([
 
     initialize: function () {
       this.model.on('change:bus', this.render, this);
+      this.model.on('change:route', this.render, this);
     },
 
     selectDirection: function (e) {
-      console.log('Select direction event');
+      var target = $(e.target),
+        direction = target.data('direction');
+
+      Helpers.visuallySelectRoute(target);
+
+      console.log('Selected direction', direction);
+      this.model.set('direction', direction);
     },
 
     render: function () {
-      var html = this.template(this.model.toJSON());
+      var route = this.model.get('route'),
+        direction = this.model.get('direction'),
+        html;
+
+      html = this.template(route);
       this.$el.html(html);
-      this.model.set('direction', 1);
+
+      Helpers.visuallySelectRoute($('[data-direction="0"]'));
       return this;
     }
   });
+
   return ControlsView;
 });
