@@ -1,0 +1,2 @@
+[ ] Add loading animation when retrieving bus data.
+[ ] Decode the bus route polylines.

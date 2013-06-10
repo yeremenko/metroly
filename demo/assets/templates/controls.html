@@ -1,6 +1,6 @@
 <div id="bus-id">
   <div id="bus-number">
-    <h2>{{shortName}}<span></span></h2>
+    <h2>{{route.shortName}}<span></span></h2>
   </div>
   <div id="route-selector"></div>
 </div>
@@ -8,7 +8,7 @@
 <div id="bus-direction-wrapper">
   <div id="bus-number">
     <div>
-      {{#each directions}}
+      {{#each route.directions}}
         <a class="route" data-direction="{{directionId}}">
           {{destination}}
         </a>
@@ -16,21 +16,20 @@
     </div>
   </div>
   <div id="via-text">
-    <p><i>{{description}}</i></p>
+    <p><i>{{route.description}}</i></p>
   </div>
 </div>
 
 <div id="misc-info">
-  <div class="tracking-status" id="tracking-status-live">
-      <p>Live</p>
+
+  <div class="tracking-status {{#if live}}live{{else}}offline{{/if}}">
+    <p>{{#if live}}Live{{else}}Offline{{/if}}</p>
   </div>
-  <div class="tracking-status" id="tracking-status-offline">
-      <p>Offline</p>
-  </div>
+
   <div class="fave-route" id="fave-route-not">
       <p>Favorite</p>
   </div>
-  <div class="fave-route" id="fave-route-selected">
+<!--   <div class="fave-route" id="fave-route-selected">
       <p>Favorite</p>
-  </div>
+  </div> -->
 </div>

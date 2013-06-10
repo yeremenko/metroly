@@ -7,7 +7,8 @@ require.config({
     backbone: '../assets/libs/backbone.min',
     handlebars: '../assets/libs/handlebars',
     leaflet: '../assets/libs/leaflet/leaflet',
-    busesnyc: '../assets/libs/busesNYC'
+    busesnyc: '../assets/libs/busesNYC',
+    shortpoll: 'helpers/poller'
   },
   shim: {
     backbone: {
@@ -26,6 +27,10 @@ require.config({
     busesnyc: {
       deps: ['jquery'],
       exports: 'MtaBusTime'
+    },
+    shortpoll: {
+      deps: ['jquery'],
+      exports: 'ShortPoll'
     }
   }
 });

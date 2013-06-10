@@ -11,7 +11,8 @@ define([
     defaults: {
       bus: undefined,
       direction: 0,
-      route: {}
+      route: {},
+      live: true
     },
 
     initialize: function () {
@@ -24,6 +25,7 @@ define([
     },
 
     getBuses: function () {
+      console.log('getting buses');
       var bus = this.get('bus'), dir = this.get('direction'), self = this;
       this.mta.getBuses(bus, dir, function (buses) {
         self.notifyBusesChanged(buses);
@@ -38,6 +40,10 @@ define([
         });
         self.set('route', route);
       });
+    },
+
+    toggleLive: function () {
+      this.set('live', !this.get('live'));
     },
 
     onBusesChanged: function (cb, ctx) {

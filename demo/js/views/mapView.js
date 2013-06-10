@@ -5,8 +5,9 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'leaflet'
-], function ($, _, Backbone, L) {
+  'leaflet',
+  'shortpoll'
+], function ($, _, Backbone, L, ShortPoll) {
   "use strict";
 
   var RouteLayers = {
@@ -151,14 +152,20 @@ define([
       this.model.set('bus', bus);
     },
 
+    startBusTracking: function () {
+      if (!this.poll) {
+        this.poll = new ShortPoll(13 * 1000);
+      }
+      var getBuses = _.bind(this.model.getBuses, this.model);
+      this.poll.start(getBuses);
+    },
+
     changeDirection: function () {
       var direction = this.model.get('direction');
 
       this.map.removeLayer(CurrentRouteLayer);
       CurrentRouteLayer = RouteLayers['dir' + direction];
       this.map.addLayer(CurrentRouteLayer);
-
-      this.model.getBuses();
     },
 
     busLayer: new L.LayerGroup(),
@@ -184,6 +191,7 @@ define([
       }
 
       this.busLayer.addTo(this.map);
+      this.startBusTracking();
     },
 
     cacheRoute: function () {

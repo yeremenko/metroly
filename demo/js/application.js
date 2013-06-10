@@ -27,6 +27,10 @@ define([
 
     selectDirection: function (direction) {
       mapModel.set('direction', direction);
+    },
+
+    toHomeState: function () {
+
     }
   });
 

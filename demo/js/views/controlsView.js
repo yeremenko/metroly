@@ -6,7 +6,7 @@ define([
   'underscore',
   'backbone',
   'handlebars',
-  'text!../../assets/templates/controls.html'
+  'text!../../assets/templates/controls.html',
 ], function ($, _, Backbone, H, controlsTpl) {
 
   var Helpers = {
@@ -21,12 +21,19 @@ define([
     template: H.compile(controlsTpl),
 
     events: {
-      'click .route': 'selectDirection'
+      'click .route': 'selectDirection',
+      'click .tracking-status': 'toggleLive'
     },
 
     initialize: function () {
       this.model.on('change:bus', this.render, this);
       this.model.on('change:route', this.render, this);
+      this.model.on('change:live', this.render, this);
+
+    },
+
+    toggleLive: function (e) {
+      this.model.toggleLive();
     },
 
     selectDirection: function (e) {
@@ -40,11 +47,12 @@ define([
     },
 
     render: function () {
-      var route = this.model.get('route'),
-        direction = this.model.get('direction'),
-        html;
+      var html, ctx = {};
+      ctx.route = this.model.get('route');
+      ctx.direction = this.model.get('direction');
+      ctx.live = this.model.get('live');
 
-      html = this.template(route);
+      html = this.template(ctx);
       this.$el.html(html);
 
       Helpers.visuallySelectRoute($('[data-direction="0"]'));
