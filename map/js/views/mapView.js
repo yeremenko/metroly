@@ -76,8 +76,8 @@ define([
 
   var LocatorIcon = L.Icon.extend({
     options: {
-      iconUrl: '../../assets/images/icon_set/locator_icon.png',
-      shadowUrl: '../../assets/images/icon_set/locator_icon_shadow.png',
+      iconUrl: 'assets/images/icon_set/locator_icon.png',
+      shadowUrl: 'assets/images/icon_set/locator_icon_shadow.png',
       iconSize: [26, 40],
       shadowSize: [13, 29],
       iconAnchor: [13, 40],
@@ -96,7 +96,7 @@ define([
   var createLocatorIcon = function (bearing) {
     var locator_icon = new LocatorIcon(),
       iconUrl = '',
-      imagesBasePath = '../../assets/images/icon_set/';
+      imagesBasePath = 'assets/images/icon_set/';
 
     if (bearing >= 67.5 && bearing < 112.5) {
       iconUrl = imagesBasePath + 'icon_n.png';
