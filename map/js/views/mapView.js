@@ -132,6 +132,7 @@ define([
       this.model.onBusesChanged(this.showBuses, this);
       this.model.on('change:route', this.cacheRoute, this);
       this.model.on('change:direction', this.changeDirection, this);
+      this.model.on('change:live', this.changeLive, this);
     },
 
     initMap: function () {
@@ -160,12 +161,24 @@ define([
       this.poll.start(getBuses);
     },
 
-    changeDirection: function () {
-      var direction = this.model.get('direction');
+    changeLive: function (o, live) {
+      console.log('Live changed');
+      if (!live) {
+        this.poll.stop();
+      } else {
+        this.startBusTracking();
+      }
+    },
 
+    changeDirection: function () {
+      console.log('Changed direction');
+      var direction = this.model.get('direction');
       this.map.removeLayer(CurrentRouteLayer);
+      this.map.removeLayer(this.busLayer);
+      this.model.getBuses();
       CurrentRouteLayer = RouteLayers['dir' + direction];
       this.map.addLayer(CurrentRouteLayer);
+      console.log('Added new route layer');
     },
 
     busLayer: new L.LayerGroup(),
@@ -191,7 +204,6 @@ define([
       }
 
       this.busLayer.addTo(this.map);
-      this.startBusTracking();
     },
 
     cacheRoute: function () {
@@ -218,6 +230,9 @@ define([
           self.map.removeLayer(CurrentRouteLayer);
           CurrentRouteLayer = RouteLayers.dir0;
           self.map.addLayer(CurrentRouteLayer);
+          if (self.model.get('live')) {
+            self.startBusTracking();
+          }
         });
       });
     },
