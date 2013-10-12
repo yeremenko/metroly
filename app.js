@@ -9,7 +9,7 @@ var app = express()
   , PORT = 8888
   , IP = "127.0.0.1"
 
-require('./schemas.js')(app, mongoose);
+// require('./schemas.js')(app, mongoose);
 
 app.configure(function () {
   app.engine('jade', jade.__express);
