@@ -7,7 +7,7 @@ var express = require('express')
 
 var app = express()
   , PORT = 8888
-  , IP = 127.0.0.1
+  , IP = "127.0.0.1"
 
 require('./schemas.js')(app, mongoose);
 
