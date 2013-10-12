@@ -4,18 +4,18 @@ var express = require('express')
   , jade = require('jade')
   , path = require('path')
   , routes = require('./routes')
+  , config = require('./config')['prod']
 
-var app = express()
-  , PORT = 8888
-  , IP = "127.0.0.1"
+var app = express();
 
-// require('./schemas.js')(app, mongoose);
+mongoose.connect(config.MONGO_URL);
+require('./schemas.js')(app, mongoose);
 
 app.configure(function () {
   app.engine('jade', jade.__express);
 
-  app.set('port', process.env.OPENSHIFT_NODEJS_PORT || PORT);
-  app.set('ip', process.env.OPENSHIFT_NODEJS_IP || IP);
+  app.set('port', config.PORT);
+  app.set('ip', config.IP);
   app.set('views', './templates');
   app.set('view engine', 'jade');
   app.set('strict routing', true);
@@ -38,4 +38,4 @@ function ensureAuthenticated(req, res, next) {
 }
 
 app.listen(app.get('port'), app.get('ip'));
-console.log('Listening on ' + app.get('port') + ' ...');
+console.log('Listening on ' + app.get('ip') + ':' + app.get('port') + ' ...');
