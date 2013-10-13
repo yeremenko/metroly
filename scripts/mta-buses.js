@@ -98,8 +98,6 @@ function saveToDb (buses, cb) {
       });
     })
   }
-
-  cb();
 }
 
 function main () {
