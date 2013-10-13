@@ -1,4 +1,4 @@
-var state = 'prod';
+var state = 'dev';
 
 config = {};
 

@@ -125,12 +125,13 @@ function main () {
           if (answer === 'y') {
             saveToDb(buses, function () {
               console.log('called!');
+              rl.close();
             });
             console.log('Will save to the database.');
           } else {
             console.log('Will not save.');
+            rl.close();
           }
-          rl.close();
         });
 
       });
