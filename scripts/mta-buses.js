@@ -67,6 +67,7 @@ module.exports = mta;
 function saveToDb (buses, cb) {
   var mongoose = require('mongoose')
     , config = require('../config')
+    , city;
 
   mongoose.connect(config.MONGO_URL);
   require('../schemas.js')(null, mongoose);
@@ -79,6 +80,7 @@ function saveToDb (buses, cb) {
 
     buses[city].forEach(function (busline) {
       BusLine.findOne({name: busline}, function (err, bus) {
+        console.log('inside of findOne');
 
         if (err) return;
 
