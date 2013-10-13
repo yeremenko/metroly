@@ -4,7 +4,7 @@ var express = require('express')
   , jade = require('jade')
   , path = require('path')
   , routes = require('./routes')
-  , config = require('./config')['prod']
+  , config = require('./config')
 
 var app = express();
 
@@ -27,6 +27,8 @@ app.configure(function () {
   app.use(express.cookieParser());
   app.use(express.session({ secret: 'keyboard secret' }));
 });
+
+routes.init(app, mongoose);
 
 app.get('/', routes.home);
 app.get('/v1/buses/:city', routes.getBuses);

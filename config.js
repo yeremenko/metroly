@@ -1,3 +1,5 @@
+var state = 'dev';
+
 config = {};
 
 config.dev = {
@@ -12,4 +14,4 @@ config.prod = {
   MONGO_URL: 'mongodb://' + process.env.OPENSHIFT_MONGODB_DB_HOST + ':' + process.env.OPENSHIFT_MONGODB_DB_PORT + '/'
 };
 
-module.exports = config;
+module.exports = (state === 'prod') ? config.prod : config.dev;

@@ -1,5 +1,10 @@
 var routes = {};
 
+routes.init = function (app, mongoose) {
+  routes.app = app;
+  routes.mongoose = mongoose;
+};
+
 routes.home = function (req, res) {
 
   console.log('home view requested');
@@ -10,22 +15,21 @@ routes.home = function (req, res) {
   res.render('home');
 };
 
+// XX Figure out how to a nice way to break the coupling between MTA and routes.getBuses.
+var mta = require('./scripts/mta-buses');
 
 routes.getBuses = function (req, res) {
-
   var city = req.params.city;
+  var BusLine = routes.mongoose.model('BusLine');
 
-  var buses = {
-    nyc: {
-      brooklyn: ['b63'],
-      x: ['x1']
+  BusLine.find({city: city}, function (err, buses) {
+    console.log('called back with this ', buses);
+    if (buses.length > 0) {
+      return res.send(JSON.stringify(mta.sortDbByBorough(buses)));
+    } else {
+      return res.send(JSON.stringify({error: 'Invalid request'}));
     }
-  };
-
-
-  res.send(JSON.stringify(city ? buses[city] : buses));
-
+  });
 };
-
 
 module.exports = routes;
