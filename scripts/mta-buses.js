@@ -82,7 +82,7 @@ function saveToDb (buses, cb) {
       BusLine.findOne({name: busline}, function (err, bus) {
         console.log('inside of findOne');
 
-        if (err) return;
+        if (err) return console.error(err);
 
         if (bus) {
           return console.log(busline, ' already exists.');
