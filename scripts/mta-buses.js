@@ -83,6 +83,7 @@ function saveToDb (buses, cb) {
         if (bus) {
           return console.log(busline, ' already exists.');
         } else {
+          console.log('will try to save ');
           var bus = new BusLine();
           bus.name = busline;
           bus.agency = 'mta';
