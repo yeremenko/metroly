@@ -77,6 +77,7 @@ function saveToDb (buses, cb) {
   console.log('Got this data ');
 
   for (city in buses) {
+    console.log('iter');
 
     buses[city].forEach(function (busline) {
       BusLine.findOne({name: busline}, function (err, bus) {
