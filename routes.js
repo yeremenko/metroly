@@ -22,6 +22,8 @@ routes.getBuses = function (req, res) {
   var city = req.params.city;
   var BusLine = routes.mongoose.model('BusLine');
 
+  res.contentType('application/json')
+
   BusLine.find({city: city}, function (err, buses) {
     console.log('called back with this ', buses);
     if (buses.length > 0) {
