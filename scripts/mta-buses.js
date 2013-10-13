@@ -74,7 +74,7 @@ function saveToDb (buses, cb) {
 
   var busline, BusLine = mongoose.model('BusLine');
 
-  console.log('Got this data ', buses);
+  console.log('Got this data ');
 
   for (city in buses) {
 
