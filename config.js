@@ -11,7 +11,6 @@ config.dev = {
 config.prod = {
   PORT: process.env.OPENSHIFT_NODEJS_PORT,
   IP: process.env.OPENSHIFT_NODEJS_IP,
-  // MONGO_URL: 'mongodb://' + process.env.OPENSHIFT_NODEJS_USER + ':' + process.env.OPENSHIFT_NODEJS_PASSWORD + '@' + process.env.OPENSHIFT_MONGODB_DB_HOST + ':' + process.env.OPENSHIFT_MONGODB_DB_PORT + '/' + process.env.OPENSHIFT_MONGODB_DB_
   MONGO_URL: process.env.OPENSHIFT_MONGODB_DB_URL
 };
 
